@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sanchaypatra & Fixed Deposit Calculator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .gradient-bg {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        }
+        .card {
+            background-color: white;
+            border-radius: 1rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease-in-out;
+        }
+        .form-input, .form-select {
+            border-radius: 0.5rem;
+            border: 1px solid #d1d5db;
+            padding: 0.75rem 1rem;
+            width: 100%;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .form-input:focus, .form-select:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+        }
+        .btn-primary {
+            background-color: #3b82f6;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            transition: background-color 0.3s;
+            cursor: pointer;
+        }
+        .btn-primary:hover {
+            background-color: #2563eb;
+        }
+        .result-table {
+            width: 100%;
+            margin-top: 1.5rem;
+            border-collapse: collapse;
+        }
+        .result-table th, .result-table td {
+            padding: 0.75rem 1rem;
+            text-align: left;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .result-table th {
+            background-color: #f3f4f6;
+            font-weight: 600;
+        }
+        .result-table tr:last-child td {
+            border-bottom: none;
+        }
+        /* Animation for results appearing */
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="gradient-bg min-h-screen text-gray-800 p-4 sm:p-6 md:p-8">
+
+    <div class="max-w-4xl mx-auto">
+        <!-- Main Header -->
+        <header class="text-center mb-8">
+            <h1 class="text-3xl md:text-4xl font-bold text-gray-900">Bangladesh Savings & Investment Calculator</h1>
+            <p class="mt-2 text-gray-600">Calculate interest for Sanchaypatra and Fixed Deposits.</p>
+        </header>
+
+        <!-- Sanchaypatra Calculator -->
+        <section id="sanchaypatra-calculator" class="card p-6 md:p-8 mb-8">
+            <h2 class="text-2xl font-bold mb-2">Sanchaypatra Interest Calculator</h2>
+            <p class="mb-6 text-gray-500">Select your desired Sanchaypatra to calculate your potential returns.</p>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label for="sanchaypatra-type" class="block mb-2 font-medium">Sanchaypatra Type</label>
+                    <select id="sanchaypatra-type" class="form-select">
+                        <option value="">-- Select a Certificate --</option>
+                        <option value="national">National Savings Certificate</option>
+                        <option value="quarterly">Quarterly Interest Paying Savings Certificate</option>
+                        <option value="pensioner">Pensioner Savings Certificate</option>
+                        <option value="family">Family Savings Certificate</option>
+                    </select>
+                </div>
+
+                <div id="amount-input-container" class="hidden">
+                    <label for="sanchaypatra-amount" class="block mb-2 font-medium">Investment Amount (BDT)</label>
+                    <input type="number" id="sanchaypatra-amount" class="form-input" placeholder="e.g., 500000">
+                    <p id="amount-hint" class="text-xs text-gray-500 mt-1"></p>
+                </div>
+            </div>
+
+            <div class="mt-6 text-center">
+                <button id="calculate-sanchaypatra" class="btn-primary w-full md:w-auto" disabled>Calculate Interest</button>
+            </div>
+            
+            <p id="sanchaypatra-error" class="text-red-500 text-center mt-4"></p>
+            <div id="sanchaypatra-results" class="mt-6 hidden"></div>
+        </section>
+
+        <!-- Compound Interest Calculator -->
+        <section id="fd-calculator" class="card p-6 md:p-8">
+            <h2 class="text-2xl font-bold mb-2">Fixed Deposit (FD) Calculator</h2>
+            <p class="mb-6 text-gray-500">Calculate compound interest for your fixed deposits.</p>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label for="fd-amount" class="block mb-2 font-medium">Principal Amount (BDT)</label>
+                    <input type="number" id="fd-amount" class="form-input" placeholder="e.g., 1000000">
+                </div>
+                <div>
+                    <label for="fd-rate" class="block mb-2 font-medium">Interest Rate (% per year)</label>
+                    <input type="number" id="fd-rate" class="form-input" placeholder="e.g., 7.5">
+                </div>
+                <div>
+                    <label for="fd-tax" class="block mb-2 font-medium">Source Tax</label>
+                    <select id="fd-tax" class="form-select">
+                        <option value="0.10">10% (with TIN certificate)</option>
+                        <option value="0.15">15% (without TIN certificate)</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="fd-tenor" class="block mb-2 font-medium">Tenor (Years)</label>
+                    <input type="number" id="fd-tenor" class="form-input" placeholder="e.g., 5">
+                </div>
+            </div>
+
+            <div class="mt-6 text-center">
+                <button id="calculate-fd" class="btn-primary w-full md:w-auto">Calculate FD Interest</button>
+            </div>
+
+            <p id="fd-error" class="text-red-500 text-center mt-4"></p>
+            <div id="fd-results" class="mt-6 hidden"></div>
+        </section>
+        
+        <!-- Footer -->
+        <footer class="text-center mt-8 pb-4">
+            <p class="text-gray-500">&copy; 2024 - created by AnorupKantiDas</p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // --- DATA ---
+            // Storing rates and rules in an object for easy updates
+            const sanchaypatraData = {
+                'national': {
+                    name: 'National Savings Certificate',
+                    tenor: 5,
+                    multiple: 10,
+                    rates: {
+                        below_750k: [0.0974, 0.1021, 0.1072, 0.1126, 0.1183],
+                        above_750k: [0.0972, 0.1019, 0.1070, 0.1123, 0.1180]
+                    },
+                    tax: {
+                        threshold: 500000,
+                        rate_below: 0.05,
+                        rate_above: 0.10,
+                        pensioner_rule: false
+                    }
+                },
+                'quarterly': {
+                    name: 'Quarterly Interest Paying Savings Certificate',
+                    tenor: 3,
+                    multiple: 100000,
+                    rates: {
+                        below_750k: [0.1065, 0.1122, 0.1182],
+                        above_750k: [0.1060, 0.1116, 0.1177] // Corrected rates as per original prompt logic
+                    },
+                    tax: {
+                        threshold: 500000,
+                        rate_below: 0.05,
+                        rate_above: 0.10,
+                        pensioner_rule: false
+                    }
+                },
+                'pensioner': {
+                    name: 'Pensioner Savings Certificate',
+                    tenor: 5,
+                    multiple: 50000,
+                    rates: {
+                        below_750k: [0.0984, 0.1032, 0.1084, 0.1139, 0.1198],
+                        above_750k: [0.0972, 0.1019, 0.1070, 0.1123, 0.1180]
+                    },
+                    tax: {
+                        threshold: 500000,
+                        rate_below: 0.00, // No tax below threshold
+                        rate_above: 0.10,
+                        pensioner_rule: true
+                    }
+                },
+                'family': {
+                    name: 'Family Savings Certificate',
+                    tenor: 5,
+                    multiple: 10000,
+                    rates: {
+                        below_750k: [0.0981, 0.1029, 0.1080, 0.1135, 0.1193],
+                        above_750k: [0.0972, 0.1019, 0.1070, 0.1123, 0.1180]
+                    },
+                    tax: {
+                        threshold: 500000,
+                        rate_below: 0.05,
+                        rate_above: 0.10,
+                        pensioner_rule: false
+                    }
+                }
+            };
+
+            // --- DOM ELEMENTS ---
+            const sanchaypatraTypeSelect = document.getElementById('sanchaypatra-type');
+            const amountInputContainer = document.getElementById('amount-input-container');
+            const sanchaypatraAmountInput = document.getElementById('sanchaypatra-amount');
+            const amountHint = document.getElementById('amount-hint');
+            const calculateSanchaypatraBtn = document.getElementById('calculate-sanchaypatra');
+            const sanchaypatraError = document.getElementById('sanchaypatra-error');
+            const sanchaypatraResults = document.getElementById('sanchaypatra-results');
+            
+            const fdAmountInput = document.getElementById('fd-amount');
+            const fdRateInput = document.getElementById('fd-rate');
+            const fdTaxSelect = document.getElementById('fd-tax');
+            const fdTenorInput = document.getElementById('fd-tenor');
+            const calculateFdBtn = document.getElementById('calculate-fd');
+            const fdError = document.getElementById('fd-error');
+            const fdResults = document.getElementById('fd-results');
+
+            // --- EVENT LISTENERS ---
+            sanchaypatraTypeSelect.addEventListener('change', () => {
+                const selectedType = sanchaypatraTypeSelect.value;
+                if (selectedType) {
+                    const data = sanchaypatraData[selectedType];
+                    amountHint.textContent = `Amount must be a multiple of ${data.multiple}.`;
+                    amountInputContainer.classList.remove('hidden');
+                    amountInputContainer.classList.add('fade-in');
+                    calculateSanchaypatraBtn.disabled = false;
+                } else {
+                    amountInputContainer.classList.add('hidden');
+                    calculateSanchaypatraBtn.disabled = true;
+                }
+                sanchaypatraResults.classList.add('hidden');
+                sanchaypatraError.textContent = '';
+            });
+
+            calculateSanchaypatraBtn.addEventListener('click', () => {
+                const type = sanchaypatraTypeSelect.value;
+                const amount = parseFloat(sanchaypatraAmountInput.value);
+                const data = sanchaypatraData[type];
+
+                // Validation
+                if (!type) {
+                    sanchaypatraError.textContent = 'Please select a Sanchaypatra type.';
+                    return;
+                }
+                if (isNaN(amount) || amount <= 0) {
+                    sanchaypatraError.textContent = 'Please enter a valid investment amount.';
+                    return;
+                }
+                if (amount % data.multiple !== 0) {
+                    sanchaypatraError.textContent = `Amount must be a multiple of ${data.multiple}.`;
+                    return;
+                }
+
+                sanchaypatraError.textContent = '';
+                calculateAndDisplaySanchaypatra(type, amount, data);
+            });
+
+            calculateFdBtn.addEventListener('click', () => {
+                const amount = parseFloat(fdAmountInput.value);
+                const rate = parseFloat(fdRateInput.value);
+                const taxRate = parseFloat(fdTaxSelect.value);
+                const tenor = parseInt(fdTenorInput.value);
+                
+                // Validation
+                if (isNaN(amount) || amount <= 0 || isNaN(rate) || rate <= 0 || isNaN(tenor) || tenor <= 0) {
+                    fdError.textContent = 'Please fill all fields with valid positive numbers.';
+                    return;
+                }
+
+                fdError.textContent = '';
+                calculateAndDisplayFd(amount, rate, taxRate, tenor);
+            });
+
+            // --- CALCULATION & DISPLAY FUNCTIONS ---
+            function calculateAndDisplaySanchaypatra(type, amount, data) {
+                let resultsHtml = `<h3 class="text-xl font-semibold mb-4 text-center">Results for ${data.name}</h3>`;
+                let tableHtml = `
+                    <div class="overflow-x-auto">
+                        <table class="result-table">
+                            <thead>
+                                <tr>
+                                    <th>Year</th>
+                                    <th>Annual Interest (BDT)</th>
+                                    <th>Interest after Source Tax (BDT)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                `;
+
+                let totalInterest = 0;
+                let totalInterestAfterTax = 0;
+
+                for (let year = 0; year < data.tenor; year++) {
+                    const rate = amount > 750000 ? data.rates.above_750k[year] : data.rates.below_750k[year];
+                    const annualInterest = amount * rate;
+                    totalInterest += annualInterest;
+
+                    // Tax calculation
+                    let tax = 0;
+                    if (data.tax.pensioner_rule) {
+                        if (amount > data.tax.threshold) {
+                             tax = annualInterest * data.tax.rate_above;
+                        }
+                    } else {
+                         if (amount > data.tax.threshold) {
+                             tax = annualInterest * data.tax.rate_above;
+                         } else {
+                            tax = annualInterest * data.tax.rate_below;
+                         }
+                    }
+
+                    const interestAfterTax = annualInterest - tax;
+                    totalInterestAfterTax += interestAfterTax;
+
+                    tableHtml += `
+                        <tr>
+                            <td>${year + 1}</td>
+                            <td>${formatCurrency(annualInterest)}</td>
+                            <td>${formatCurrency(interestAfterTax)}</td>
+                        </tr>
+                    `;
+                }
+
+                tableHtml += `
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+                
+                let summaryHtml = `
+                    <div class="mt-6 text-center bg-blue-50 p-6 rounded-lg">
+                        <p class="text-lg">Total Interest over ${data.tenor} years: <span class="font-bold text-blue-700">${formatCurrency(totalInterest)}</span></p>
+                        <p class="text-lg mt-2">Total Interest after Tax: <span class="font-bold text-green-700">${formatCurrency(totalInterestAfterTax)}</span></p>
+                    </div>
+                `;
+
+                sanchaypatraResults.innerHTML = resultsHtml + tableHtml + summaryHtml;
+                sanchaypatraResults.classList.remove('hidden');
+                sanchaypatraResults.classList.add('fade-in');
+            }
+            
+            function calculateAndDisplayFd(principal, rate, taxRate, tenor) {
+                let currentBalance = principal;
+                let totalInterest = 0;
+
+                for (let i = 0; i < tenor; i++) {
+                    let interestThisYear = currentBalance * (rate / 100);
+                    let taxOnInterest = interestThisYear * taxRate;
+                    let netInterest = interestThisYear - taxOnInterest;
+                    totalInterest += interestThisYear;
+                    currentBalance += netInterest; // Compounding with post-tax interest
+                }
+                
+                const totalInterestAfterTax = currentBalance - principal;
+
+                let resultsHtml = `
+                    <div class="text-center bg-gray-50 p-6 rounded-lg fade-in">
+                        <p class="text-lg">Total Interest Earned: <span class="font-bold text-blue-700">${formatCurrency(totalInterest)}</span></p>
+                        <p class="text-lg mt-2">Total Interest After Tax: <span class="font-bold text-green-700">${formatCurrency(totalInterestAfterTax)}</span></p>
+                    </div>
+                `;
+
+                fdResults.innerHTML = resultsHtml;
+                fdResults.classList.remove('hidden');
+            }
+
+
+            // --- HELPER FUNCTIONS ---
+            function formatCurrency(number) {
+                return new Intl.NumberFormat('en-IN', {
+                    style: 'currency',
+                    currency: 'BDT',
+                    minimumFractionDigits: 2
+                }).format(number);
+            }
+        });
+    </script>
+</body>
+</html>

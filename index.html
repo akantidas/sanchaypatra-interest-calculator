@@ -3,184 +3,104 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sanchaypatra & Fixed Deposit Calculator</title>
+    <title>Sanchaypatra & FD Calculator</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Serif+Bengali:wght@400;500;600;700&display=swap" rel="stylesheet">
-<style>
-        body {
-            font-family: 'Inter', 'Noto Serif Bengali', sans-serif;
-        }
-        .gradient-bg {
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-        }
-        .card {
-            background-color: white;
-            border-radius: 1rem;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-            transition: all 0.3s ease-in-out;
-        }
-        .form-input, .form-select {
-            border-radius: 0.5rem;
-            border: 1px solid #d1d5db;
-            padding: 0.75rem 1rem;
-            width: 100%;
-            transition: border-color 0.2s, box-shadow 0.2s;
-        }
-        .form-input:focus, .form-select:focus {
-            outline: none;
-            border-color: #3b82f6;
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
-        }
-        .btn {
-            padding: 0.5rem 1rem;
-            border-radius: 0.5rem;
-            font-weight: 600;
-            transition: all 0.3s;
-            cursor: pointer;
-        }
-        .btn-primary {
-            background-color: #3b82f6;
-            color: white;
-            padding: 0.75rem 1.5rem;
-        }
-        .btn-primary:hover {
-            background-color: #2563eb;
-        }
-        .btn-secondary {
-            background-color: #e5e7eb;
-            color: #374151;
-        }
-        .btn-secondary:hover {
-            background-color: #d1d5db;
-        }
-        
-        /* Tab Navigation Styles */
-        .nav-tab {
-            padding: 0.5rem 1rem;
-            font-weight: 600;
-            color: #6b7280; /* text-gray-500 */
-            border-bottom: 2px solid transparent;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        .nav-tab:hover {
-            color: #374151; /* text-gray-700 */
-        }
-        .nav-tab-active {
-            color: #3b82f6; /* text-blue-600 */
-            border-bottom-color: #3b82f6;
-        }
-
-        .result-table {
-            width: 100%;
-            margin-top: 1.5rem;
-            border-collapse: collapse;
-        }
-        .result-table th, .result-table td {
-            padding: 0.75rem 1rem;
-            text-align: left;
-            border-bottom: 1px solid #e5e7eb;
-        }
-        .result-table th {
-            background-color: #f3f4f6;
-            font-weight: 600;
-        }
-        .result-table tr:last-child td {
-            border-bottom: none;
-        }
-        .fade-in {
-            animation: fadeIn 0.5s ease-in-out;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+    <style>
+        body { font-family: 'Inter', 'Noto Serif Bengali', sans-serif; }
+        .gradient-bg { background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); }
+        .card { background-color: white; border-radius: 1rem; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); transition: all 0.3s ease-in-out; }
+        .form-input, .form-select { border-radius: 0.5rem; border: 1px solid #d1d5db; padding: 0.75rem 1rem; width: 100%; transition: border-color 0.2s; }
+        .form-input:focus, .form-select:focus { outline: none; border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3); }
+        .btn { padding: 0.75rem 1.5rem; border-radius: 0.5rem; font-weight: 600; cursor: pointer; transition: all 0.3s; }
+        .btn-primary { background-color: #3b82f6; color: white; }
+        .btn-primary:hover { background-color: #2563eb; }
+        .nav-tab { padding: 0.5rem 1rem; font-weight: 600; color: #6b7280; border-bottom: 2px solid transparent; cursor: pointer; }
+        .nav-tab-active { color: #3b82f6; border-bottom-color: #3b82f6; }
+        .result-table { width: 100%; margin-top: 1.5rem; border-collapse: collapse; }
+        .result-table th, .result-table td { padding: 0.75rem 1rem; border-bottom: 1px solid #e5e7eb; text-align: left; }
+        .fade-in { animation: fadeIn 0.5s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
-<body class="gradient-bg min-h-screen text-gray-800 p-4 sm:p-6 md:p-8">
+<body class="gradient-bg min-h-screen p-4 md:p-8">
 
     <div class="max-w-4xl mx-auto">
-        <!-- Main Header -->
         <header class="text-center mb-6">
             <h1 class="text-3xl md:text-4xl font-bold text-gray-900" data-lang-key="main_title">Bangladesh Savings & Investment Calculator</h1>
             <p class="mt-2 text-gray-600" data-lang-key="main_subtitle">Calculate interest for Sanchaypatra and Fixed Deposits.</p>
         </header>
 
-        <!-- Navigation Header -->
         <nav class="flex justify-between items-center mb-6 bg-white p-4 rounded-lg shadow-sm">
-            <div class="flex space-x-2 sm:space-x-4">
+            <div class="flex space-x-4">
                 <button id="nav-sanchaypatra" class="nav-tab nav-tab-active" data-lang-key="nav_sanchaypatra">Sanchaypatra</button>
                 <button id="nav-fd" class="nav-tab" data-lang-key="nav_fd">FD Calculator</button>
             </div>
-            <div>
-                <button id="lang-switcher" class="btn btn-secondary text-sm sm:text-base">বাংলা</button>
-            </div>
+            <button id="lang-switcher" class="btn bg-gray-200 text-gray-700 py-2">বাংলা</button>
         </nav>
 
-        <!-- Sanchaypatra Calculator -->
         <section id="sanchaypatra-calculator" class="card p-6 md:p-8 mb-8 fade-in">
             <h2 class="text-2xl font-bold mb-2" data-lang-key="sanchay_title">Sanchaypatra Interest Calculator</h2>
-            <p class="mb-6 text-gray-500" data-lang-key="sanchay_subtitle">Select your desired Sanchaypatra to calculate your potential returns.</p>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
                 <div>
-                    <label for="sanchaypatra-type" class="block mb-2 font-medium" data-lang-key="sanchay_type_label">Sanchaypatra Type</label>
-                    <select id="sanchaypatra-type" class="form-select">
-                        <!-- Options will be populated by JS -->
-                    </select>
+                    <label class="block mb-2 font-medium" data-lang-key="sanchay_type_label">Sanchaypatra Type</label>
+                    <select id="sanchaypatra-type" class="form-select"></select>
                 </div>
-
                 <div id="amount-input-container" class="hidden">
-                    <label for="sanchaypatra-amount" class="block mb-2 font-medium" data-lang-key="sanchay_amount_label">Investment Amount (BDT)</label>
-                    <input type="number" id="sanchaypatra-amount" class="form-input" placeholder="e.g., 500000" data-lang-key="sanchay_amount_placeholder_attr">
+                    <label class="block mb-2 font-medium" data-lang-key="sanchay_amount_label">Investment Amount (BDT)</label>
+                    <input type="number" id="sanchaypatra-amount" class="form-input" placeholder="500000">
                     <p id="amount-hint" class="text-xs text-gray-500 mt-1"></p>
                 </div>
             </div>
-
-            <div class="mt-6 text-center">
-                <button id="calculate-sanchaypatra" class="btn btn-primary w-full md:w-auto" disabled data-lang-key="calculate_btn">Calculate Interest</button>
-            </div>
-            
-            <p id="sanchaypatra-error" class="text-red-500 text-center mt-4"></p>
+            <button id="calculate-sanchaypatra" class="btn btn-primary w-full mt-6" disabled data-lang-key="calculate_btn">Calculate Interest</button>
             <div id="sanchaypatra-results" class="mt-6 hidden"></div>
         </section>
 
-        <!-- Compound Interest Calculator -->
         <section id="fd-calculator" class="card p-6 md:p-8 hidden">
             <h2 class="text-2xl font-bold mb-2" data-lang-key="fd_title">Fixed Deposit (FD) Calculator</h2>
-            <p class="mb-6 text-gray-500" data-lang-key="fd_subtitle">Calculate compound interest for your fixed deposits.</p>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
                 <div>
-                    <label for="fd-amount" class="block mb-2 font-medium" data-lang-key="fd_amount_label">Principal Amount (BDT)</label>
-                    <input type="number" id="fd-amount" class="form-input" placeholder="e.g., 1000000" data-lang-key="fd_amount_placeholder_attr">
+                    <label class="block mb-2 font-medium" data-lang-key="fd_amount_label">Principal Amount (BDT)</label>
+                    <input type="number" id="fd-amount" class="form-input" placeholder="1000000">
                 </div>
                 <div>
-                    <label for="fd-rate" class="block mb-2 font-medium" data-lang-key="fd_rate_label">Interest Rate (% per year)</label>
-                    <input type="number" id="fd-rate" class="form-input" placeholder="e.g., 7.5" data-lang-key="fd_rate_placeholder_attr">
+                    <label class="block mb-2 font-medium" data-lang-key="fd_rate_label">Interest Rate (% per year)</label>
+                    <input type="number" id="fd-rate" class="form-input" placeholder="7.5" step="0.01">
                 </div>
                 <div>
-                    <label for="fd-tax" class="block mb-2 font-medium" data-lang-key="fd_tax_label">Source Tax</label>
-                    <select id="fd-tax" class="form-select">
-                        <option value="0.10" data-lang-key="fd_tax_option_tin">10% (with TIN certificate)</option>
-                        <option value="0.15" data-lang-key="fd_tax_option_no_tin">15% (without TIN certificate)</option>
+                    <label class="block mb-2 font-medium" data-lang-key="fd_tenor_label">Tenor</label>
+                    <div class="flex">
+                        <input type="number" id="fd-tenor-value" class="form-input rounded-r-none" placeholder="5">
+                        <select id="fd-tenor-unit" class="form-select w-32 rounded-l-none border-l-0">
+                            <option value="years" data-lang-key="unit_years">Years</option>
+                            <option value="months" data-lang-key="unit_months">Months</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <label class="block mb-2 font-medium" data-lang-key="fd_compounding_label">Compounding Frequency</label>
+                    <select id="fd-compounding" class="form-select">
+                        <option value="4" data-lang-key="freq_quarterly">Quarterly</option>
+                        <option value="2" data-lang-key="freq_semi">Semi-Annually</option>
+                        <option value="1" data-lang-key="freq_annual">Annually</option>
                     </select>
                 </div>
                 <div>
-                    <label for="fd-tenor" class="block mb-2 font-medium" data-lang-key="fd_tenor_label">Tenor (Years)</label>
-                    <input type="number" id="fd-tenor" class="form-input" placeholder="e.g., 5" data-lang-key="fd_tenor_placeholder_attr">
+                    <label class="block mb-2 font-medium" data-lang-key="fd_tax_label">Source Tax</label>
+                    <select id="fd-tax" class="form-select">
+                        <option value="0.10" data-lang-key="fd_tax_option_tin">10% (with TIN)</option>
+                        <option value="0.15" data-lang-key="fd_tax_option_no_tin">15% (without TIN)</option>
+                    </select>
                 </div>
             </div>
-
-            <div class="mt-6 text-center">
-                <button id="calculate-fd" class="btn btn-primary w-full md:w-auto" data-lang-key="calculate_fd_btn">Calculate FD Interest</button>
+            <button id="calculate-fd" class="btn btn-primary w-full mt-6" data-lang-key="calculate_fd_btn">Calculate FD Interest</button>
+            <div id="fd-results" class="mt-8 hidden">
+                <div id="fd-summary-box" class="p-6 rounded-lg text-center mb-6"></div>
+                <div class="h-64"><canvas id="fdChart"></canvas></div>
             </div>
-
-            <p id="fd-error" class="text-red-500 text-center mt-4"></p>
-            <div id="fd-results" class="mt-6 hidden"></div>
         </section>
-        
-        <!-- Footer -->
+
         <footer class="text-center mt-8 pb-4">
             <div class="flex justify-center space-x-6 mb-4">
                 <!-- Twitter (X) -->
@@ -227,8 +147,8 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            // --- DATA & CONFIG ---
             let currentLang = 'en';
+            let myChart = null;
 
             const translations = {
                 en: {
@@ -237,344 +157,214 @@
                     nav_sanchaypatra: 'Sanchaypatra',
                     nav_fd: 'FD Calculator',
                     sanchay_title: 'Sanchaypatra Interest Calculator',
-                    sanchay_subtitle: 'Select your desired Sanchaypatra to calculate your potential returns.',
                     sanchay_type_label: 'Sanchaypatra Type',
-                    sanchay_select_prompt: '-- Select a Certificate --',
                     sanchay_amount_label: 'Investment Amount (BDT)',
-                    sanchay_amount_placeholder: 'e.g., 500000',
                     calculate_btn: 'Calculate Interest',
                     fd_title: 'Fixed Deposit (FD) Calculator',
-                    fd_subtitle: 'Calculate compound interest for your fixed deposits.',
                     fd_amount_label: 'Principal Amount (BDT)',
-                    fd_amount_placeholder: 'e.g., 1000000',
                     fd_rate_label: 'Interest Rate (% per year)',
-                    fd_rate_placeholder: 'e.g., 7.5',
+                    fd_tenor_label: 'Tenor',
+                    fd_compounding_label: 'Compounding Frequency',
                     fd_tax_label: 'Source Tax',
-                    fd_tax_option_tin: '10% (with TIN certificate)',
-                    fd_tax_option_no_tin: '15% (without TIN certificate)',
-                    fd_tenor_label: 'Tenor (Years)',
-                    fd_tenor_placeholder: 'e.g., 5',
+                    unit_years: 'Years',
+                    unit_months: 'Months',
+                    freq_quarterly: 'Quarterly',
+                    freq_semi: 'Semi-Annually',
+                    freq_annual: 'Annually',
+                    fd_tax_option_tin: '10% (with TIN)',
+                    fd_tax_option_no_tin: '15% (without TIN)',
                     calculate_fd_btn: 'Calculate FD Interest',
-                    footer_credit: '© 2025 - created by AnorupKantiDas',
-                    legal_disclaimer: 'This calculator is for informational purposes only. Interest rates are subject to change by the government.',
-                    amount_hint_prefix: 'Amount must be a multiple of',
-                    results_for: 'Results for',
+                    asset_msg_prefix: 'Your Total Asset after',
+                    asset_msg_suffix: 'will be',
+                    result_fd_total_earned: 'Total Interest (Gross):',
+                    result_fd_total_after_tax: 'Net Interest (After Tax):',
                     result_year: 'Year',
-                    result_annual_interest: 'Annual Interest (BDT)',
-                    result_interest_after_tax: 'Interest after Source Tax (BDT)',
-                    result_total_interest_prefix: 'Total Interest over',
-                    result_total_interest_suffix: 'years:',
-                    result_total_interest_after_tax: 'Total Interest after Tax:',
-                    result_fd_total_earned: 'Total Interest Earned:',
-                    result_fd_total_after_tax: 'Total Interest After Tax:',
+                    result_annual_interest: 'Annual Interest',
+                    result_interest_after_tax: 'After Tax',
+                    results_for: 'Results for',
+                    footer_credit: '© 2025 - created by AnorupKantiDas',
+                    legal_disclaimer: 'This calculator is for informational purposes only. Interest rates are subject to change.',
+                    amount_hint_prefix: 'Multiple of',
+                    sanchay_select_prompt: '-- Select Certificate --'
                 },
                 bn: {
-                    main_title: 'বাংলাদেশ সঞ্চয় ও বিনিয়োগ ক্যালকুলেটর',
+                    main_title: 'বাংলাদেশ সঞ্চয় ও বিনিয়োগ ক্যালকুলেটর',
                     main_subtitle: 'সঞ্চয়পত্র এবং ফিক্সড ডিপোজিটের মুনাফা গণনা করুন।',
                     nav_sanchaypatra: 'সঞ্চয়পত্র',
                     nav_fd: 'এফডি ক্যালকুলেটর',
                     sanchay_title: 'সঞ্চয়পত্র মুনাফা ক্যালকুলেটর',
-                    sanchay_subtitle: 'আপনার সম্ভাব্য আয় গণনা করতে পছন্দের সঞ্চয়পত্র নির্বাচন করুন।',
                     sanchay_type_label: 'সঞ্চয়পত্রের ধরন',
-                    sanchay_select_prompt: '-- একটি সার্টিফিকেট নির্বাচন করুন --',
                     sanchay_amount_label: 'বিনিয়োগের পরিমাণ (টাকা)',
-                    sanchay_amount_placeholder: 'যেমন, ৫০০০০০',
                     calculate_btn: 'মুনাফা গণনা করুন',
-                    fd_title: 'ফিক্সড ডিপোজিট (এফডি) ক্যালকুলেটর',
-                    fd_subtitle: 'আপনার ফিক্সড ডিপোজিটের চক্রবৃদ্ধি মুনাফা গণনা করুন।',
+                    fd_title: 'এফডি ক্যালকুলেটর',
                     fd_amount_label: 'মূল পরিমাণ (টাকা)',
-                    fd_amount_placeholder: 'যেমন, ১০০০০০০',
                     fd_rate_label: 'মুনাফার হার (% বার্ষিক)',
-                    fd_rate_placeholder: 'যেমন, ৭.৫',
+                    fd_tenor_label: 'মেয়াদ',
+                    fd_compounding_label: 'মুনাফা চক্রবৃদ্ধির হার',
                     fd_tax_label: 'উৎস কর',
-                    fd_tax_option_tin: '১০% (টিআইএন সার্টিফিকেট সহ)',
-                    fd_tax_option_no_tin: '১৫% (টিআইএন সার্টিফিকেট ছাড়া)',
-                    fd_tenor_label: 'মেয়াদ (বছর)',
-                    fd_tenor_placeholder: 'যেমন, ৫',
-                    calculate_fd_btn: 'এফডি মুনাফা গণনা করুন',
-                    footer_credit: '© ২০২৫ - তৈরি করেছেন AnorupKantiDas',
-                    legal_disclaimer: 'এই ক্যালকুলেটরটি শুধুমাত্র তথ্যের উদ্দেশ্যে। মুনাফার হার সরকার কর্তৃক পরিবর্তনযোগ্য।',
-                    amount_hint_prefix: 'টাকার পরিমাণ অবশ্যই',
-                    results_for: 'ফলাফল',
+                    unit_years: 'বছর',
+                    unit_months: 'মাস',
+                    freq_quarterly: 'ত্রৈমাসিক',
+                    freq_semi: 'অর্ধ-বার্ষিক',
+                    freq_annual: 'বার্ষিক',
+                    fd_tax_option_tin: '১০% (টিআইএন সহ)',
+                    fd_tax_option_no_tin: '১৫% (টিআইএন ছাড়া)',
+                    calculate_fd_btn: 'মুনাফা গণনা করুন',
+                    asset_msg_prefix: 'আপনার মোট সম্পদ',
+                    asset_msg_suffix: 'পরে হবে',
+                    result_fd_total_earned: 'মোট মুনাফা (কর পূর্ব):',
+                    result_fd_total_after_tax: 'নিট মুনাফা (কর পরবর্তী):',
                     result_year: 'বছর',
-                    result_annual_interest: 'বার্ষিক মুনাফা (টাকা)',
-                    result_interest_after_tax: 'উৎস করের পর মুনাফা (টাকা)',
-                    result_total_interest_prefix: 'মোট মুনাফা',
-                    result_total_interest_suffix: 'বছরে:',
-                    result_total_interest_after_tax: 'করের পর মোট মুনাফা:',
-                    result_fd_total_earned: 'মোট অর্জিত মুনাফা:',
-                    result_fd_total_after_tax: 'করের পর মোট মুনাফা:',
+                    result_annual_interest: 'বার্ষিক মুনাফা',
+                    result_interest_after_tax: 'কর পরবর্তী',
+                    results_for: 'ফলাফল',
+                    footer_credit: '© ২০২৫ - তৈরি করেছেন AnorupKantiDas',
+                    legal_disclaimer: 'তথ্যের জন্য ব্যবহৃত। মুনাফার হার পরিবর্তনশীল।',
+                    amount_hint_prefix: 'গুণিতক হতে হবে',
+                    sanchay_select_prompt: '-- সঞ্চয়পত্র নির্বাচন করুন --'
                 }
             };
 
             const sanchaypatraData = {
-                'national': {
-                    name: { en: 'National Savings Certificate', bn: 'জাতীয় সঞ্চয় সার্টিফিকেট' },
-                    tenor: 5,
-                    multiple: 10,
-                    rates: { below_750k: [0.0974, 0.1021, 0.1072, 0.1126, 0.1183], above_750k: [0.0972, 0.1019, 0.1070, 0.1123, 0.1180] },
-                    tax: { threshold: 500000, rate_below: 0.05, rate_above: 0.10, pensioner_rule: false }
-                },
-                'quarterly': {
-                    name: { en: 'Quarterly Interest Paying Savings Certificate', bn: 'ত্রৈমাসিক মুনাফাভিত্তিক সঞ্চয়পত্র' },
-                    tenor: 3,
-                    multiple: 100000,
-                    rates: { below_750k: [0.1065, 0.1122, 0.1182], above_750k: [0.1060, 0.1116, 0.1177] },
-                    tax: { threshold: 500000, rate_below: 0.05, rate_above: 0.10, pensioner_rule: false }
-                },
-                'pensioner': {
-                    name: { en: 'Pensioner Savings Certificate', bn: 'পেনশনার সঞ্চয়পত্র' },
-                    tenor: 5,
-                    multiple: 50000,
-                    rates: { below_750k: [0.0984, 0.1032, 0.1084, 0.1139, 0.1198], above_750k: [0.0972, 0.1019, 0.1070, 0.1123, 0.1180] },
-                    tax: { threshold: 500000, rate_below: 0.00, rate_above: 0.10, pensioner_rule: true }
-                },
-                'family': {
-                    name: { en: 'Family Savings Certificate', bn: 'পরিবার সঞ্চয়পত্র' },
-                    tenor: 5,
-                    multiple: 10000,
-                    rates: { below_750k: [0.0981, 0.1029, 0.1080, 0.1135, 0.1193], above_750k: [0.0972, 0.1019, 0.1070, 0.1123, 0.1180] },
-                    tax: { threshold: 500000, rate_below: 0.05, rate_above: 0.10, pensioner_rule: false }
-                }
+                'national': { name: { en: 'National Savings Certificate (5-yr)', bn: '৫ বছর মেয়াদী বাংলাদেশ সঞ্চয়পত্র' }, tenor: 5, multiple: 10, rates: { below_750k: [0.0974, 0.1021, 0.1072, 0.1126, 0.1183], above_750k: [0.0972, 0.1019, 0.1070, 0.1123, 0.1180] }, tax: { threshold: 500000, rate_below: 0.05, rate_above: 0.10 } },
+                'quarterly': { name: { en: 'Quarterly Interest Savings', bn: 'ত্রৈমাসিক মুনাফাভিত্তিক সঞ্চয়পত্র' }, tenor: 3, multiple: 100000, rates: { below_750k: [0.1065, 0.1122, 0.1182], above_750k: [0.1060, 0.1116, 0.1177] }, tax: { threshold: 500000, rate_below: 0.05, rate_above: 0.10 } },
+                'family': { name: { en: 'Family Savings Certificate', bn: 'পরিবার সঞ্চয়পত্র' }, tenor: 5, multiple: 10000, rates: { below_750k: [0.0981, 0.1029, 0.1080, 0.1135, 0.1193], above_750k: [0.0972, 0.1019, 0.1070, 0.1123, 0.1180] }, tax: { threshold: 500000, rate_below: 0.05, rate_above: 0.10 } },
+                'pensioner': { name: { en: 'Pensioner Savings Certificate', bn: 'পেনশনার সঞ্চয়পত্র' }, tenor: 5, multiple: 50000, rates: { below_750k: [0.0984, 0.1032, 0.1084, 0.1139, 0.1198], above_750k: [0.0972, 0.1019, 0.1070, 0.1123, 0.1180] }, tax: { threshold: 500000, rate_below: 0.00, rate_above: 0.10 } }
             };
-            
-            // --- DOM ELEMENTS ---
-            const langSwitcherBtn = document.getElementById('lang-switcher');
-            const navSanchaypatra = document.getElementById('nav-sanchaypatra');
-            const navFd = document.getElementById('nav-fd');
 
-            const sanchaypatraSection = document.getElementById('sanchaypatra-calculator');
-            const sanchaypatraTypeSelect = document.getElementById('sanchaypatra-type');
-            const amountInputContainer = document.getElementById('amount-input-container');
-            const sanchaypatraAmountInput = document.getElementById('sanchaypatra-amount');
-            const amountHint = document.getElementById('amount-hint');
-            const calculateSanchaypatraBtn = document.getElementById('calculate-sanchaypatra');
-            const sanchaypatraError = document.getElementById('sanchaypatra-error');
-            const sanchaypatraResults = document.getElementById('sanchaypatra-results');
-            
-            const fdSection = document.getElementById('fd-calculator');
-            const fdAmountInput = document.getElementById('fd-amount');
-            const fdRateInput = document.getElementById('fd-rate');
-            const fdTaxSelect = document.getElementById('fd-tax');
-            const fdTenorInput = document.getElementById('fd-tenor');
-            const calculateFdBtn = document.getElementById('calculate-fd');
-            const fdError = document.getElementById('fd-error');
-            const fdResults = document.getElementById('fd-results');
-
-            // --- FUNCTIONS ---
-            function populateSanchaypatraOptions() {
-                const selectedValue = sanchaypatraTypeSelect.value;
-                sanchaypatraTypeSelect.innerHTML = '';
-                
-                const promptOption = document.createElement('option');
-                promptOption.value = '';
-                promptOption.textContent = translations[currentLang].sanchay_select_prompt;
-                sanchaypatraTypeSelect.appendChild(promptOption);
-
-                for (const key in sanchaypatraData) {
-                    const option = document.createElement('option');
-                    option.value = key;
-                    option.textContent = sanchaypatraData[key].name[currentLang];
-                    sanchaypatraTypeSelect.appendChild(option);
-                }
-                sanchaypatraTypeSelect.value = selectedValue;
-            }
-
-            function switchLanguage() {
-                currentLang = currentLang === 'en' ? 'bn' : 'en';
-                langSwitcherBtn.textContent = currentLang === 'en' ? 'বাংলা' : 'English';
-
+            function updateUI() {
                 document.querySelectorAll('[data-lang-key]').forEach(el => {
                     const key = el.getAttribute('data-lang-key');
-                    if (key.endsWith('_attr')) {
-                        const attrKey = key.replace('_attr', '');
-                        const placeholderText = translations[currentLang][attrKey.replace('_placeholder', '') + '_placeholder'];
-                        el.placeholder = placeholderText;
-                    } else {
-                        el.textContent = translations[currentLang][key];
-                    }
+                    el.textContent = translations[currentLang][key];
                 });
-                
                 populateSanchaypatraOptions();
-                
-                // Refresh hint text if visible
-                if (!amountInputContainer.classList.contains('hidden')) {
-                     updateAmountHint();
+            }
+
+            function populateSanchaypatraOptions() {
+                const select = document.getElementById('sanchaypatra-type');
+                const lastVal = select.value;
+                select.innerHTML = `<option value="">${translations[currentLang].sanchay_select_prompt}</option>`;
+                for (let key in sanchaypatraData) {
+                    select.innerHTML += `<option value="${key}">${sanchaypatraData[key].name[currentLang]}</option>`;
                 }
-            }
-            
-            function updateAmountHint() {
-                 const selectedType = sanchaypatraTypeSelect.value;
-                 if (selectedType) {
-                    const data = sanchaypatraData[selectedType];
-                    if (currentLang === 'bn') {
-                        amountHint.textContent = `${translations[currentLang].amount_hint_prefix} ${data.multiple} এর গুণিতক হতে হবে।`;
-                    } else {
-                        amountHint.textContent = `${translations[currentLang].amount_hint_prefix} ${data.multiple}.`;
-                    }
-                 }
+                select.value = lastVal;
             }
 
-
-            function calculateAndDisplaySanchaypatra(type, amount, data) {
+            function calculateSanchaypatra() {
+                const type = document.getElementById('sanchaypatra-type').value;
+                const amount = parseFloat(document.getElementById('sanchaypatra-amount').value);
+                const data = sanchaypatraData[type];
                 const T = translations[currentLang];
-                let resultsHtml = `<h3 class="text-xl font-semibold mb-4 text-center">${T.results_for} ${data.name[currentLang]}</h3>`;
-                let tableHtml = `
-                    <div class="overflow-x-auto">
-                        <table class="result-table">
-                            <thead>
-                                <tr>
-                                    <th>${T.result_year}</th>
-                                    <th>${T.result_annual_interest}</th>
-                                    <th>${T.result_interest_after_tax}</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                `;
 
-                let totalInterest = 0;
-                let totalInterestAfterTax = 0;
+                if (!type || isNaN(amount) || amount <= 0) return;
 
-                for (let year = 0; year < data.tenor; year++) {
-                    const rate = amount > 750000 ? data.rates.above_750k[year] : data.rates.below_750k[year];
-                    const annualInterest = amount * rate;
-                    totalInterest += annualInterest;
+                let tableHtml = `<h3 class="text-xl font-semibold mb-4 text-center">${T.results_for} ${data.name[currentLang]}</h3>
+                                <div class="overflow-x-auto"><table class="result-table">
+                                <thead><tr><th>${T.result_year}</th><th>${T.result_annual_interest}</th><th>${T.result_interest_after_tax}</th></tr></thead><tbody>`;
 
-                    let tax = 0;
-                    if (data.tax.pensioner_rule) {
-                        if (amount > data.tax.threshold) tax = annualInterest * data.tax.rate_above;
-                    } else {
-                        tax = amount > data.tax.threshold ? annualInterest * data.tax.rate_above : annualInterest * data.tax.rate_below;
-                    }
+                let totalNet = 0;
+                for (let i = 0; i < data.tenor; i++) {
+                    const rateArr = amount > 750000 ? data.rates.above_750k : data.rates.below_750k;
+                    const annualGross = amount * rateArr[i];
+                    const taxRate = amount > data.tax.threshold ? data.tax.rate_above : data.tax.rate_below;
+                    const net = annualGross * (1 - taxRate);
+                    totalNet += net;
 
-                    const interestAfterTax = annualInterest - tax;
-                    totalInterestAfterTax += interestAfterTax;
-
-                    tableHtml += `
-                        <tr>
-                            <td>${year + 1}</td>
-                            <td>${formatCurrency(annualInterest)}</td>
-                            <td>${formatCurrency(interestAfterTax)}</td>
-                        </tr>
-                    `;
+                    tableHtml += `<tr><td>${i+1}</td><td>${formatCurrency(annualGross)}</td><td>${formatCurrency(net)}</td></tr>`;
                 }
-
                 tableHtml += `</tbody></table></div>`;
                 
-                let summaryHtml = `
-                    <div class="mt-6 text-center bg-blue-50 p-6 rounded-lg">
-                        <p class="text-lg">${T.result_total_interest_prefix} ${data.tenor} ${T.result_total_interest_suffix} <span class="font-bold text-blue-700">${formatCurrency(totalInterest)}</span></p>
-                        <p class="text-lg mt-2">${T.result_total_interest_after_tax} <span class="font-bold text-green-700">${formatCurrency(totalInterestAfterTax)}</span></p>
-                    </div>
-                `;
-
-                sanchaypatraResults.innerHTML = resultsHtml + tableHtml + summaryHtml;
-                sanchaypatraResults.classList.remove('hidden');
-                sanchaypatraResults.classList.add('fade-in');
+                const resultsDiv = document.getElementById('sanchaypatra-results');
+                resultsDiv.innerHTML = tableHtml;
+                resultsDiv.classList.remove('hidden');
             }
-            
-            function calculateAndDisplayFd(principal, rate, taxRate, tenor) {
+
+            function calculateFD() {
+                const P = parseFloat(document.getElementById('fd-amount').value);
+                const r = parseFloat(document.getElementById('fd-rate').value) / 100;
+                const n = parseInt(document.getElementById('fd-compounding').value);
+                const tVal = parseFloat(document.getElementById('fd-tenor-value').value);
+                const tUnit = document.getElementById('fd-tenor-unit').value;
+                const taxRate = parseFloat(document.getElementById('fd-tax').value);
+
+                if (isNaN(P) || isNaN(r) || isNaN(tVal)) return;
+
+                const t = tUnit === 'years' ? tVal : tVal / 12;
+                const totalMaturityGross = P * Math.pow((1 + (r / n)), (n * t));
+                const totalInterest = totalMaturityGross - P;
+                const netInterest = totalInterest * (1 - taxRate);
+                const finalAsset = P + netInterest;
+
                 const T = translations[currentLang];
-                let currentBalance = principal;
-                let totalInterest = 0;
-
-                for (let i = 0; i < tenor; i++) {
-                    let interestThisYear = currentBalance * (rate / 100);
-                    let taxOnInterest = interestThisYear * taxRate;
-                    let netInterest = interestThisYear - taxOnInterest;
-                    totalInterest += interestThisYear;
-                    currentBalance += netInterest;
-                }
+                const unitStr = tUnit === 'years' ? T.unit_years : T.unit_months;
                 
-                const totalInterestAfterTax = currentBalance - principal;
-
-                let resultsHtml = `
-                    <div class="text-center bg-gray-50 p-6 rounded-lg fade-in">
-                        <p class="text-lg">${T.result_fd_total_earned} <span class="font-bold text-blue-700">${formatCurrency(totalInterest)}</span></p>
-                        <p class="text-lg mt-2">${T.result_fd_total_after_tax} <span class="font-bold text-green-700">${formatCurrency(totalInterestAfterTax)}</span></p>
+                document.getElementById('fd-summary-box').innerHTML = `
+                    <div class="bg-blue-50 p-4 rounded-lg mb-4">
+                        <p class="text-sm text-gray-600">${T.result_fd_total_earned} <span class="font-bold text-gray-900">${formatCurrency(totalInterest)}</span></p>
+                        <p class="text-lg font-bold text-green-600">${T.result_fd_total_after_tax} ${formatCurrency(netInterest)}</p>
                     </div>
+                    <p class="text-xl font-semibold text-gray-800">
+                        ${T.asset_msg_prefix} ${tVal} ${unitStr} ${T.asset_msg_suffix} <br>
+                        <span class="text-3xl text-blue-700">${formatCurrency(finalAsset)}</span>
+                    </p>
                 `;
-
-                fdResults.innerHTML = resultsHtml;
-                fdResults.classList.remove('hidden');
-            }
-            
-            function formatCurrency(number) {
-                return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'BDT', minimumFractionDigits: 2 }).format(number);
+                document.getElementById('fd-results').classList.remove('hidden');
+                drawChart(P, netInterest);
             }
 
-            // --- EVENT LISTENERS ---
-            langSwitcherBtn.addEventListener('click', switchLanguage);
+            function drawChart(principal, interest) {
+                const ctx = document.getElementById('fdChart').getContext('2d');
+                if (myChart) myChart.destroy();
+                myChart = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: [currentLang === 'en' ? 'Principal' : 'আসল', currentLang === 'en' ? 'Net Profit' : 'নিট মুনাফা'],
+                        datasets: [{ data: [principal, interest], backgroundColor: ['#3b82f6', '#10b981'] }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false }
+                });
+            }
 
-            // Tab Navigation
-            navSanchaypatra.addEventListener('click', () => {
-                sanchaypatraSection.classList.remove('hidden');
-                sanchaypatraSection.classList.add('fade-in');
-                fdSection.classList.add('hidden');
+            function formatCurrency(num) {
+                return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'BDT' }).format(num);
+            }
 
-                navSanchaypatra.classList.add('nav-tab-active');
-                navFd.classList.remove('nav-tab-active');
+            // Tabs and Events
+            document.getElementById('lang-switcher').addEventListener('click', () => {
+                currentLang = currentLang === 'en' ? 'bn' : 'en';
+                document.getElementById('lang-switcher').textContent = currentLang === 'en' ? 'বাংলা' : 'English';
+                updateUI();
             });
 
-            navFd.addEventListener('click', () => {
-                fdSection.classList.remove('hidden');
-                fdSection.classList.add('fade-in');
-                sanchaypatraSection.classList.add('hidden');
-
-                navFd.classList.add('nav-tab-active');
-                navSanchaypatra.classList.remove('nav-tab-active');
+            document.getElementById('nav-sanchaypatra').addEventListener('click', () => {
+                document.getElementById('sanchaypatra-calculator').classList.remove('hidden');
+                document.getElementById('fd-calculator').classList.add('hidden');
+                document.getElementById('nav-sanchaypatra').classList.add('nav-tab-active');
+                document.getElementById('nav-fd').classList.remove('nav-tab-active');
             });
 
-            // Sanchaypatra Calculator
-            sanchaypatraTypeSelect.addEventListener('change', () => {
-                const selectedType = sanchaypatraTypeSelect.value;
-                if (selectedType) {
-                    updateAmountHint();
-                    amountInputContainer.classList.remove('hidden');
-                    amountInputContainer.classList.add('fade-in');
-                    calculateSanchaypatraBtn.disabled = false;
-                } else {
-                    amountInputContainer.classList.add('hidden');
-                    calculateSanchaypatraBtn.disabled = true;
+            document.getElementById('nav-fd').addEventListener('click', () => {
+                document.getElementById('fd-calculator').classList.remove('hidden');
+                document.getElementById('sanchaypatra-calculator').classList.add('hidden');
+                document.getElementById('nav-fd').classList.add('nav-tab-active');
+                document.getElementById('nav-sanchaypatra').classList.remove('nav-tab-active');
+            });
+
+            document.getElementById('sanchaypatra-type').addEventListener('change', (e) => {
+                const container = document.getElementById('amount-input-container');
+                if(e.target.value) {
+                    container.classList.remove('hidden');
+                    document.getElementById('calculate-sanchaypatra').disabled = false;
+                    const data = sanchaypatraData[e.target.value];
+                    document.getElementById('amount-hint').textContent = `${translations[currentLang].amount_hint_prefix} ${data.multiple}`;
                 }
-                sanchaypatraResults.classList.add('hidden');
-                sanchaypatraError.textContent = '';
             });
 
-            calculateSanchaypatraBtn.addEventListener('click', () => {
-                const type = sanchaypatraTypeSelect.value;
-                const amount = parseFloat(sanchaypatraAmountInput.value);
-                const data = sanchaypatraData[type];
+            document.getElementById('calculate-sanchaypatra').addEventListener('click', calculateSanchaypatra);
+            document.getElementById('calculate-fd').addEventListener('click', calculateFD);
 
-                if (!type || isNaN(amount) || amount <= 0 || amount % data.multiple !== 0) {
-                    sanchaypatraError.textContent = 'Please enter a valid amount that is a multiple for the selected certificate.';
-                    return;
-                }
-                sanchaypatraError.textContent = '';
-                calculateAndDisplaySanchaypatra(type, amount, data);
-            });
-
-            // FD Calculator
-            calculateFdBtn.addEventListener('click', () => {
-                const amount = parseFloat(fdAmountInput.value);
-                const rate = parseFloat(fdRateInput.value);
-                const taxRate = parseFloat(fdTaxSelect.value);
-                const tenor = parseInt(fdTenorInput.value);
-                
-                if (isNaN(amount) || amount <= 0 || isNaN(rate) || rate <= 0 || isNaN(tenor) || tenor <= 0) {
-                    fdError.textContent = 'Please fill all fields with valid positive numbers.';
-                    return;
-                }
-                fdError.textContent = '';
-                calculateAndDisplayFd(amount, rate, taxRate, tenor);
-            });
-            
-            // --- INITIALIZATION ---
-            switchLanguage(); // To set initial language to BN, then switch back to EN to populate everything
-            switchLanguage(); // This ensures all text is set to English on load
-            populateSanchaypatraOptions();
+            updateUI();
         });
     </script>
 </body>
 </html>
-
